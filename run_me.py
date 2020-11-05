@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import json
+import ast
 import matplotlib.pyplot as plt
 from operator import itemgetter 
 from nltk.tokenize import sent_tokenize, word_tokenize, RegexpTokenizer
@@ -13,11 +14,12 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import classification_report, f1_score
 
 # read csv
-data = pd.read_csv('final_book_summaries_m2.csv')
+# data = pd.read_csv('final_book_summaries_m2.csv')
+data = pd.read_csv('book_summaries_6500.csv')
 
 # turn dataframe into numpy array
-# shape (816,4)
 np_array = data.to_numpy()
+
 
 # split data into X and Y
 # Y is the genres for each book
@@ -37,10 +39,16 @@ data_x_title_summ = np.core.defchararray.add(title, data_x[:,-1].astype(str))
 
 
 # Fix Y labels into matrix
-# ["Children's literature" 'Fantasy' 'Fiction' 'Mystery' 'Other'
-#  'Science Fiction']
+# ["Children's literature" 'Fantasy' 'Fiction' 'Mystery' 'Science Fiction']
 for i in range(len(data_y)):
-    data_y[i] = list(json.loads(data_y[i]).values())
+
+    # new
+    data_y[i] = ast.literal_eval(data_y[i])
+    # new
+    data_y[i] = list(data_y[i].values())
+
+    # old
+    # data_y[i] = list(json.loads(data_y[i]).values())
 
 mlb = MultiLabelBinarizer()
 data_y = mlb.fit_transform(data_y)
@@ -57,13 +65,6 @@ enc = OneHotEncoder(handle_unknown='ignore')
 data_x_hot = pd.DataFrame(enc.fit_transform(auth_df[['Author_num']]).toarray())
 data_auth = data_x_hot.to_numpy()
 
-
-
-# 816 books/documents
-# 405 distinct authors
-# 26651 sentences total
-# 32305 distinct words in in corpus (countvectorizer)
-# 32003 without stop-words
 
 # Tokenize books into counts with removing stop words 
 vectorizer = CountVectorizer(stop_words= 'english')
@@ -110,7 +111,7 @@ x_train, x_test, y_train, y_test = train_test_split(data_x_comb, data_y, test_si
 # logistic regeression 
 def log_reg():
     logreg = LogisticRegression(
-        random_state=0, solver="lbfgs", multi_class="multinomial", penalty="l2")
+        random_state=0, solver="lbfgs", multi_class="multinomial", penalty="l2", max_iter= 500)
 
     clf = OneVsRestClassifier(logreg)
     clf = clf.fit(x_train, y_train)
@@ -156,4 +157,4 @@ def supp_vec_mach():
 
 #################################################################################################################
 
-supp_vec_mach()
+log_reg()
