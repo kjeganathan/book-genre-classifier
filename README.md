@@ -1,6 +1,6 @@
 # Book Genre Classifier
 
-This book genre classifier serves as a way to classify books by genres based off of a summary of each book using natural language processing models.
+This book genre classifier serves as a way to classify books by genres based on the summary of each book using natural language processing models.
 
 There are many different types of genres, and a book has the potential to fall under many of these genres since some genres are incredibly similar and sometimes indistinguishable. With this in mind, the task of labeling books as a certain genre is nontrivial, which is something we aim to solve using text classification executed by this NLP book genre classifier. 
 
